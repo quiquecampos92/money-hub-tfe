@@ -1,0 +1,58 @@
+import { CreateMovimientos } from '@/components/movimientos/buttons';
+import Pagination from '@/components/movimientos/pagination';
+import MovimientosTable from '@/components/movimientos/table';
+import { InvoicesTableSkeleton } from '@/components/skeletons';
+import { fetchMovimientos, fetchMovimientosPages } from '@/shared/middlewares/data';
+import { Metadata } from 'next';
+import { Suspense } from 'react';
+
+
+export const metadata: Metadata = {
+  title: 'Movimientos',
+};
+
+export default async function Page({
+  searchParams,
+}: {
+  searchParams?: {
+    query?: string;
+    page?: string;
+  };
+}) {
+  const query = searchParams?.query || '';
+  const currentPage = Number(searchParams?.page) || 1;
+
+  const movimientos = await fetchMovimientos("ASC", currentPage);
+  const totalPages = await fetchMovimientosPages();
+
+  return (
+    <div
+      className='w-full flex flex-col'
+    >
+      <h1 className="font-bold text-3xl md:text-4xl mb-8 text-blue-600">
+        Movimientos
+      </h1>
+
+      <div
+        className='my-[10px] ml-auto'
+      >
+        <CreateMovimientos />
+      </div>
+
+      <Suspense key={query + currentPage} fallback={<InvoicesTableSkeleton />}>
+        {(!movimientos || movimientos.length === 0) ?
+          <div
+            className='flex flex-col items-center p-[100px] rounded-lg w-full border border-blue-400'
+          >
+            <p>Aun no hay cuentas cargadas en el sistema</p>
+          </div>
+          : <MovimientosTable movimiento={movimientos} />
+        }
+      </Suspense>
+
+      <div className="mt-5 flex w-full justify-center">
+        {(movimientos && movimientos.length > 0) && <Pagination totalPages={totalPages as number} />}      
+      </div>
+    </div>
+  );
+}
