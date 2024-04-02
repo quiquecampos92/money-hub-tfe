@@ -19,22 +19,22 @@ export default function RegistroForm() {
 
   return (
     <form action={dispatch} className="space-y-3">
-      <div className="flex-1 rounded-lg bg-gray-50 px-6 pb-4 pt-8">
+      <div className="flex-1 rounded-lg bg-gray-50 px-6 pb-4 pt-2">
         <h1 className={`${lusitana.className} text-2xl`}>
           Crear una nueva cuenta
         </h1>
         <p
           className='mb-3'
         >
-          Si ya tienes puedes <Link className='text-blue-500 cursor-pointer' href="/login">iniciar sesión</Link>
+          Si ya tienes una, puedes <Link className='text-[#00A2DB] cursor-pointer' href="/login">iniciar sesión</Link>
         </p>
         <div className="w-full">
           <div>
             <label
-              className="mb-3 mt-5 block text-xs font-medium text-gray-900"
+              className="mb-1 mt-1 block text-xs font-medium text-gray-900"
               htmlFor="name"
             >
-              name
+              Email
             </label>
             <div className="relative">
               <input
@@ -59,7 +59,7 @@ export default function RegistroForm() {
           </div>
           <div>
             <label
-              className="mb-3 mt-5 block text-xs font-medium text-gray-900"
+              className="mb-1 mt-3 block text-xs font-medium text-gray-900"
               htmlFor="name"
             >
               Nombre
@@ -87,7 +87,7 @@ export default function RegistroForm() {
           </div>
           <div className="mt-4">
             <label
-              className="mb-3 mt-5 block text-xs font-medium text-gray-900"
+              className="mb-1 mt-3 block text-xs font-medium text-gray-900"
               htmlFor="password"
             >
               Contraseña
@@ -117,7 +117,7 @@ export default function RegistroForm() {
 
           <div className="mt-4">
             <label
-              className="mb-3 mt-5 block text-xs font-medium text-gray-900"
+              className="mb-3 mt-3 block text-xs font-medium text-gray-900"
               htmlFor="password"
             >
               Confirmar contraseña
