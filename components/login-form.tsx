@@ -24,7 +24,7 @@ export default function LoginForm() {
         <p
         className='mb-3'
         >
-          Si no tienes cuenta <Link className='text-blue-500 cursor-pointer' href="/registro">registrate</Link>
+          Si no tienes cuenta <Link className='text-[#00A2DB] cursor-pointer' href="/registro">regístrate</Link>
         </p>
         <div className="w-full">
           <div>
@@ -40,7 +40,7 @@ export default function LoginForm() {
                 id="email"
                 type="email"
                 name="email"
-                placeholder="Enter your email address"
+                placeholder="Introduce tu email aquí"
                 required
               />
               <AtSymbolIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
@@ -59,7 +59,7 @@ export default function LoginForm() {
                 id="password"
                 type="password"
                 name="password"
-                placeholder="Enter password"
+                placeholder="Introduce la contraseña aquí"
                 required
                 minLength={6}
               />
@@ -90,7 +90,7 @@ function LoginButton() {
 
   return (
     <Button className="mt-4 w-full" aria-disabled={pending}>
-      Continuar <ArrowRightIcon className="ml-auto h-5 w-5 text-gray-50" />
+      Continuar <ArrowRightIcon className="ml-auto h-5 w-5 text-gray-50 " />
     </Button>
   );
 }
