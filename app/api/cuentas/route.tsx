@@ -1,12 +1,12 @@
-import { fetchMovimientosFilter } from '@/shared/middlewares/data'
+import { fetchMovFilterByCuenta } from '@/shared/middlewares/data'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(req: NextRequest) {
     try {
         const { searchParams } = new URL(req.url)
-        const concepto = searchParams.get('concepto') || "todos"
-
-        const data = await fetchMovimientosFilter(concepto)
+        const iban = searchParams.get('iban') || "todos"
+        console.log(iban)
+        const data = await fetchMovFilterByCuenta(iban)
 
         return NextResponse.json(data)
     } catch (error) {

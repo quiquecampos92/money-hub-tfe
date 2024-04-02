@@ -35,10 +35,10 @@ export default async function CuentasTable({
             </label>
             <p className="text-lg font-semibold mb-2">{c.name}</p>
 
-            <label className="block text-sm font-medium text-gray-500" htmlFor="iban">
+            {/* <label className="block text-sm font-medium text-gray-500" htmlFor="iban">
               Nº de cuenta
             </label>
-            <p className="text-lg font-semibold mb-2">{c.accountnumber}</p>
+            <p className="text-lg font-semibold mb-2">{c.accountnumber}</p> */}
 
             <label className="block text-sm font-medium text-gray-500" htmlFor="iban">
               IBAN

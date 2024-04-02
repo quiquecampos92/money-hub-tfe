@@ -15,7 +15,7 @@ export default async function Page() {
     <main
       className='w-full flex flex-col'
     >
-      <h1 className="font-bold text-3xl md:text-4xl text-blue-600">
+      <h1 className="font-bold text-3xl md:text-4xl text-[#00A2DB]">
         Cuentas
       </h1>
 

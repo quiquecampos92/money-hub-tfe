@@ -5,6 +5,8 @@ import { InvoicesTableSkeleton } from '@/components/skeletons';
 import { fetchMovimientos, fetchMovimientosPages } from '@/shared/middlewares/data';
 import { Metadata } from 'next';
 import { Suspense } from 'react';
+import { SelecterCuenta } from '@/components/movimientos/SelecterCuenta';
+import { SelecterDate } from '@/components/movimientos/SelecterDate';
 
 
 export const metadata: Metadata = {
@@ -22,6 +24,7 @@ export default async function Page({
   const query = searchParams?.query || '';
   const currentPage = Number(searchParams?.page) || 1;
 
+  const grafica = await fetchMovimientos("ASC", undefined, undefined); //esta es coppiada de lo mismo que para filtrar movimientos
   const movimientos = await fetchMovimientos("ASC", currentPage);
   const totalPages = await fetchMovimientosPages();
 
@@ -29,10 +32,13 @@ export default async function Page({
     <div
       className='w-full flex flex-col'
     >
-      <h1 className="font-bold text-3xl md:text-4xl mb-8 text-blue-600">
+      <h1 className="font-bold text-3xl md:text-4xl mb-8 text-[#00A2DB]">
         Movimientos
       </h1>
-
+      {/* Aqui se muestra el select de las cuentas bancarias del usuario */}
+      {/* <SelecterCuenta movimientos={grafica} />  */}
+      {/* Aqui se muestra el select de las fechas seleccionadas */}
+      {/* <SelecterDate movimientos={grafica} />  */}
       <div
         className='my-[10px] ml-auto'
       >

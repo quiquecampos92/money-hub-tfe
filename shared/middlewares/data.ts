@@ -24,6 +24,27 @@ export async function getIdAuth() {
   }
 
 }
+export async function getNameAuth() {
+  noStore();
+  const dataAuth = await auth();
+
+  const client = createClient({
+    connectionString: process.env.NEXT_PUBLIC_POSTGRES_URL,
+  });
+  await client.connect();
+
+  try {
+    const data = await client.query(`SELECT name FROM users WHERE email = '${dataAuth?.user?.email}' AND name = '${dataAuth?.user?.name}';`);
+
+    return data.rows[0].name;
+  } catch (error) {
+    console.error('Failed to fetch user:', error);
+    throw new Error('Failed to fetch user.');
+  } finally {
+    await client.end();
+  }
+
+}
 
 export async function fetchRevenue() {
   noStore();
@@ -104,6 +125,39 @@ export async function fetchCuentasIDS() {
   }
 }
 
+export async function fetchUsersIDS() {
+  noStore();
+
+  const client = createClient({
+    connectionString: process.env.NEXT_PUBLIC_POSTGRES_URL,
+  });
+  await client.connect();
+
+
+  try {
+    const id = await getIdAuth();
+
+    if (!id) throw new Error("Failed to fetch user");
+
+    const data = await client.query(`
+      SELECT
+        id
+      FROM users
+      WHERE id = '${id}'
+      ;`
+    );
+
+    const ids = data.rows.map((user: User) => `'${user.id}'`).join(',');
+
+    return !ids ? null : `(${ids})`
+  } catch (err) {
+    console.error('Database Error:', err);
+    throw new Error("Failed get data")
+  } finally {
+    await client.end();
+  }
+}
+
 
 export async function fetchMovimientos(order: "ASC" | "DESC", page = 1, limit = 10) {
   noStore();
@@ -116,7 +170,7 @@ export async function fetchMovimientos(order: "ASC" | "DESC", page = 1, limit = 
   try {
     const ids = await fetchCuentasIDS();
 
-    if(!ids) return [];
+    if (!ids) return [];
 
     let query = `
       SELECT
@@ -145,7 +199,7 @@ export async function fetchMovimientos(order: "ASC" | "DESC", page = 1, limit = 
         OFFSET ${offset}
       `
     }
-    
+
     const data = await client.query(query);
 
     return data.rows;
@@ -169,7 +223,7 @@ export async function fetchMovimientosFilter(concepto = "todos") {
   try {
     const ids = await fetchCuentasIDS();
 
-    if(!ids) return [];
+    if (!ids) return [];
 
     let query = `
       SELECT
@@ -184,7 +238,7 @@ export async function fetchMovimientosFilter(concepto = "todos") {
       WHERE cuenta_id IN ${ids}
     `;
 
-    if(concepto !== "todos") {
+    if (concepto !== "todos") {
       query += `
         AND movimientos.concepto = '${concepto}'
         LIMIT 10
@@ -194,7 +248,7 @@ export async function fetchMovimientosFilter(concepto = "todos") {
         LIMIT 10
       `
     }
-    
+
     const data = await client.query(query);
 
     return data.rows;
@@ -206,6 +260,105 @@ export async function fetchMovimientosFilter(concepto = "todos") {
     await client.end();
   }
 }
+
+export async function fetchMovFilterByCuenta(iban = "todos") {
+  noStore();
+
+  const client = createClient({
+    connectionString: process.env.NEXT_PUBLIC_POSTGRES_URL,
+  });
+  await client.connect();
+
+  try {
+    const ids = await fetchCuentasIDS();
+
+    if (!ids) return [];
+
+    let query = `
+      SELECT
+        movimientos.id as id,
+        movimientos.cuenta_id,
+        movimientos.cantidad,
+        movimientos.date,
+        movimientos.concepto,
+        movimientos.tipo
+      FROM movimientos
+      JOIN cuentas ON movimientos.cuenta_id = cuentas.id
+      WHERE cuenta_id IN ${ids}
+    `;
+
+    if (iban !== "todos") {
+      query += `
+        AND movimientos.concepto = '${iban}'
+        LIMIT 10
+      `
+    } else {
+      query += `
+        LIMIT 10
+      `
+    }
+
+    const data = await client.query(query);
+
+    return data.rows;
+
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error("Failed get data")
+  } finally {
+    await client.end();
+  }
+}
+
+// export async function fetchCuentasFilter(iban = "todos") {
+//   noStore();
+
+//   const client = createClient({
+//     connectionString: process.env.NEXT_PUBLIC_POSTGRES_URL,
+//   });
+//   await client.connect();
+
+//   try {
+//     // const ids = await fetchUsersIDS();
+//     const id = await getIdAuth();
+
+//     if (!id) return [];
+
+//     let query = `
+//     SELECT
+//       cuentas.id as id,
+//       cuentas.user_id,
+//       cuentas.name,
+//       cuentas.accountnumber,
+//       cuentas.iban,
+//       cuentas.entidad,
+//       cuentas.saldo
+//     FROM cuentas
+//     JOIN users ON cuentas.user_id = users.id
+//     WHERE user_id ON ${id}
+//         `;
+
+//     if (iban !== "todos") {
+//       query += `
+//           AND cuentas.iban = '${iban}'
+//           LIMIT 10
+//           `
+//     } else {
+//       query += `
+//           LIMIT 10
+//           `
+//     }
+
+//     const data = await client.query(query);
+//     return data.rows;
+
+//   } catch (error) {
+//     console.error('Database Error:', error);
+//     throw new Error("Failed get data")
+//   } finally {
+//     await client.end();
+//   }
+// }
 
 export async function fetchMovimientoById(id: string) {
   noStore();
@@ -228,6 +381,37 @@ export async function fetchMovimientoById(id: string) {
     return data.rows[0];
   } catch (error) {
     console.error('Database Error:', error);
+    throw new Error("Failed get data")
+  } finally {
+    await client.end();
+  }
+}
+
+export async function fetchCountCuentasUser() {
+  noStore();
+
+  const client = createClient({
+    connectionString: process.env.NEXT_PUBLIC_POSTGRES_URL,
+  });
+  await client.connect();
+
+  try {
+    const id = await getIdAuth();
+
+    if (!id) throw new Error("Failed to fetch user");
+
+    const data = await client.query(`
+    SELECT 
+      COUNT(*) AS total_cuentas
+    FROM 
+      cuentas
+    WHERE 
+      user_id = '${id}';
+    `);
+
+    return data.rows[0].total_cuentas;
+  } catch (err) {
+    console.error('Database Error:', err);
     throw new Error("Failed get data")
   } finally {
     await client.end();
@@ -301,7 +485,7 @@ export async function fetchMovimientosPages() {
   try {
     const ids = await fetchCuentasIDS();
 
-    if(!ids) return [];
+    if (!ids) return [];
 
     const count = await client.query(`
     SELECT COUNT(*)

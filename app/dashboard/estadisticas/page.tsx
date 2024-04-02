@@ -9,10 +9,9 @@ export default async function Page() {
 
   return (
     <main>
-      <h1 className="font-bold text-3xl md:text-4xl mb-8 text-blue-600">
+      <h1 className="font-bold text-3xl md:text-4xl mb-8 text-[#00A2DB]">
         Estadísticas
       </h1>
-
         <Selecter movimientos={grafica} />
     </main>
   );

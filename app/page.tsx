@@ -16,9 +16,9 @@ export default function Home() {
             className={`${lusitana.className} text-xl text-gray-800 md:text-3xl md:leading-normal`}
           >
             <strong
-              className="text-blue-500 md:text-4xl md:leading-tight"
+              className="text-[#EB8833] md:text-4xl md:leading-tight"
             >
-              Bienvenido a Acme.
+              Bienvenido a MoneyHub.
               </strong>
             <p>
               Administra tus cuentas, transacciones y gastos de forma sencilla.
