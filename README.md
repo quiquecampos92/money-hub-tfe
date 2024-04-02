@@ -7,17 +7,17 @@
   <img src="public/moneyhub.png" alt="Imagen" style="width: 100px; height: 80px;">
 </div>
 
-## Descripción del Proyecto
+<h2><span style="color: #EB8833">Descripción del proyecto</span></h2>
 
 Este proyecto es una aplicación web diseñada para gestionar cuentas bancarias y movimientos financieros. Permite a los usuarios registrar sus cuentas bancarias, realizar seguimiento de sus saldos y realizar movimientos como transferencias y pagos.
 
-## Características Principales
+<h2><span style="color: #EB8833">Características Principales</span></h2>
 
 - Registro y gestión de cuentas bancarias.
 - Visualización de movimientos financieros asociados a cada cuenta.
 - Estadísticas y seguimiento de pagos realizados.
 
-## Tecnologías Utilizadas
+<h2><span style="color: #EB8833">Tecnologías Utilizadas</span></h2>
 
 ### Frontend y Backend
 
@@ -31,10 +31,22 @@ PostgreSQL se utiliza como base de datos para almacenar la información de usuar
 
 Otra ventaja que me ayudó a la ellección de Vercel es que la aplicación se despliega en el propio Vercel, ya que internamente tiene sus funciones automatizadas para el despliegue. Se le puede añadir un hosting propio, aunque en caso de querer uno gratuito este mismo te otorga una URL única para el proyecto.
 
-## Configuración del Entorno Local
+- WEB: https://money-hub-3tei2ihuw-enrique-campos-projects.vercel.app
+- USER: Leo31@hotmail.com
+
+<h2><span style="color: #EB8833">Configuración del Entorno Local</span></h2>
 
 Para ejecutar la aplicación en el entorno local, siga los siguientes pasos:
 
 1. **Clonar el Repositorio:**
    ```bash
-   git clone https://github.com/tu-usuario/n
+   git clone https://github.com/quiquecampos92/money-hub-tfe.git
+   ```
+
+2. **Instalar dependencias:**
+   ```bash
+   npm install
+   ```
+
+2. **Asignar variables de entorno:**
+   Crear un archivo .env

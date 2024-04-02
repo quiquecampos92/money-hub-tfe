@@ -12,16 +12,15 @@ export default function Home() {
       </div>
       <div className="mt-4 flex grow flex-col gap-4 md:flex-row">
         <div className="flex flex-col justify-center gap-6 rounded-lg bg-gray-50 px-6 py-10 md:w-2/5 md:px-20">
-          <div
-            className={`${lusitana.className} text-xl text-gray-800 md:text-3xl md:leading-normal`}
-          >
-            <strong
-              className="text-[#EB8833] md:text-4xl md:leading-tight"
-            >
+          <div className={`${lusitana.className} text-xl text-gray-800 md:text-3xl md:leading-normal`}>
+            <strong className="text-[#EB8833] md:text-4xl md:leading-tight">
               Bienvenido a MoneyHub.
             </strong>
-            <p>
+            <p className="text-gray-600 my-4">
               Administra tus cuentas, transacciones y gastos de forma sencilla.
+            </p>
+            <p className="text-gray-600 my-4">
+              Añade cuentas de cualquier banco, movimientos de cualquier tipo y registra cada paso económico que realices.
             </p>
           </div>
           <Link
