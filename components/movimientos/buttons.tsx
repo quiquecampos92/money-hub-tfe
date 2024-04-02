@@ -74,3 +74,14 @@ export function DeleteCuenta({ id }: { id: string }) {
   );
 }
 
+export function UpdateUser({ id }: { id: string }) {
+  return (
+    <Link
+      href={`/dashboard/perfil/${id}/edit`}
+      className="rounded-md border p-2 hover:bg-gray-100"
+    >
+      <PencilIcon className="w-5" />
+    </Link>
+  );
+}
+

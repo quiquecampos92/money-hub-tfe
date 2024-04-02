@@ -25,16 +25,17 @@ export default async function Page({
   const currentPage = Number(searchParams?.page) || 1;
 
   const grafica = await fetchMovimientos("ASC", undefined, undefined); //esta es coppiada de lo mismo que para filtrar movimientos
-  const movimientos = await fetchMovimientos("ASC", currentPage);
+  const movimientos = await fetchMovimientos("DESC", currentPage);
   const totalPages = await fetchMovimientosPages();
 
   return (
     <div
       className='w-full flex flex-col'
     >
-      <h1 className="font-bold text-3xl md:text-4xl mb-8 text-[#00A2DB]">
-        Movimientos
-      </h1>
+<h1 className="text-3xl font-bold text-center md:text-4xl mb-8 text-[#00A2DB] bg-[#F0F4F8] border-4 border-[#00A2DB] border-solid rounded-t-lg rounded-b-none p-4">
+  Movimientos
+</h1>
+
       {/* Aqui se muestra el select de las cuentas bancarias del usuario */}
       {/* <SelecterCuenta movimientos={grafica} />  */}
       {/* Aqui se muestra el select de las fechas seleccionadas */}

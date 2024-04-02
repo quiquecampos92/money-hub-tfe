@@ -7,7 +7,8 @@ import {
   PowerIcon,
   DocumentPlusIcon,
   ChartBarSquareIcon,
-  ChartBarIcon
+  ChartBarIcon,
+  UserIcon
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -20,6 +21,7 @@ const links = [
   { name: 'Estadísticas', href: '/dashboard/estadisticas', icon: ChartBarIcon},
   { name: 'Actualizar', href: '/dashboard/movimientos', icon: DocumentPlusIcon},
   { name: 'Cuentas', href: '/dashboard/cuentas', icon: UserGroupIcon },
+  { name: 'Perfil', href: '/dashboard/perfil', icon: UserIcon },
 ];
 
 export default function NavLinks() {
