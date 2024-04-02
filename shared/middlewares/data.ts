@@ -46,6 +46,28 @@ export async function getNameAuth() {
 
 }
 
+export async function getEmailAuth() {
+  noStore();
+  const dataAuth = await auth();
+
+  const client = createClient({
+    connectionString: process.env.NEXT_PUBLIC_POSTGRES_URL,
+  });
+  await client.connect();
+
+  try {
+    const data = await client.query(`SELECT email FROM users WHERE email = '${dataAuth?.user?.email}' AND name = '${dataAuth?.user?.name}';`);
+
+    return data.rows[0].email;
+  } catch (error) {
+    console.error('Failed to fetch user:', error);
+    throw new Error('Failed to fetch user.');
+  } finally {
+    await client.end();
+  }
+
+}
+
 export async function fetchRevenue() {
   noStore();
 
