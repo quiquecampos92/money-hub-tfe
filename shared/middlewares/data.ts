@@ -118,7 +118,7 @@ export async function fetchIdByCuenta(iban: string) {
 }
 
 
-export async function fetchMovimientosFromCuenta(iban = "todas", order: "ASC" | "DESC", limit = 20) {
+export async function fetchMovimientosFromCuenta(iban = "todas", order: "ASC" | "DESC", limit = 10) {
   noStore();
 
   const client = createClient({
@@ -128,21 +128,26 @@ export async function fetchMovimientosFromCuenta(iban = "todas", order: "ASC" | 
 
   try {
     let query = `
-      SELECT * FROM movimientos
-      `;
-      
-    // Si iban es "todas", omitir la condición de cuenta_id
+      SELECT movimientos.*, cuentas.accountnumber, cuentas.iban, cuentas.entidad
+      FROM movimientos
+    `;
+
     if (iban !== "todas") {
       const idCuentaResult = await fetchIdByCuenta(iban);
       const idCuenta = idCuentaResult[0].id; // Suponiendo que solo necesitas el primer ID
+
       query += `
-        WHERE cuenta_id = '${idCuenta}'
-        `;
+        JOIN cuentas ON movimientos.cuenta_id = cuentas.id
+        WHERE cuentas.iban = '${iban}'
+      `;
+    } else {
+      query += `
+        JOIN cuentas ON movimientos.cuenta_id = cuentas.id
+      `;
     }
 
-    // Agregar el orden y límite
     query += `
-      ORDER BY date ${order}
+      ORDER BY movimientos.date ${order}
       LIMIT ${limit}
     `;
 
@@ -156,6 +161,7 @@ export async function fetchMovimientosFromCuenta(iban = "todas", order: "ASC" | 
     await client.end();
   }
 }
+
 
 
 
