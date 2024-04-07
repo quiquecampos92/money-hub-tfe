@@ -1,4 +1,4 @@
-import { fetchMovFilterByCuenta, fetchMovimientosFromCuenta } from '@/shared/middlewares/data'
+import { fetchMovimientosFromCuenta } from '@/shared/middlewares/data'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(req: NextRequest) {
