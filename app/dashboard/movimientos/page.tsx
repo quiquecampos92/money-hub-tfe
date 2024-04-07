@@ -25,8 +25,8 @@ export default async function Page({
   const currentPage = Number(searchParams?.page) || 1;
 
   const cuentas = await fetchCuentasUser("ASC"); //esta es coppiada de lo mismo que para filtrar movimientos
-  // const movimientos = await fetchMovimientos("DESC", currentPage);
-  // const totalPages = await fetchMovimientosPages();
+  const movimientos = await fetchMovimientos("DESC", currentPage);
+  const totalPages = await fetchMovimientosPages();
 
   return (
     <div
@@ -37,7 +37,6 @@ export default async function Page({
 </h1>
 
       {/* Aqui se muestra el select de las cuentas bancarias del usuario */}
-      <SelecterCuenta cuentas={cuentas} /> 
       {/* Aqui se muestra el select de las fechas seleccionadas */}
       {/* <SelecterDate movimientos={grafica} />  */}
       <div
@@ -46,20 +45,21 @@ export default async function Page({
         <CreateMovimientos />
       </div>
 
-      {/* <Suspense key={query + currentPage} fallback={<InvoicesTableSkeleton />}>
+      <Suspense key={query + currentPage} fallback={<InvoicesTableSkeleton />}>
         {(!movimientos || movimientos.length === 0) ?
           <div
             className='flex flex-col items-center p-[100px] rounded-lg w-full border border-blue-400'
           >
             <p>Aun no hay cuentas cargadas en el sistema</p>
           </div>
-          : <MovimientosTable movimiento={movimientos} />
+          : <SelecterCuenta cuentas={cuentas} /> 
+
         }
       </Suspense>
 
       <div className="mt-5 flex w-full justify-center">
         {(movimientos && movimientos.length > 0) && <Pagination totalPages={totalPages as number} />}      
-      </div> */}
+      </div>
     </div>
   );
 }

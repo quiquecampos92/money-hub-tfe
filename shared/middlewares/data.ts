@@ -89,7 +89,7 @@ export async function fetchRevenue() {
   }
 }
 
-export async function fetchMovimientosFromCuenta(cuentaId: string, order: "ASC" | "DESC", limit = 10) {
+export async function fetchIdByCuenta(iban: string) {
   noStore();
 
   const client = createClient({
@@ -99,10 +99,10 @@ export async function fetchMovimientosFromCuenta(cuentaId: string, order: "ASC" 
 
   try {
     const data = await client.query(`
-      SELECT * FROM movimientos
-      JOIN cuentas ON movimientos.cuenta_id = ${cuentaId}
-      ORDER BY movimientos.date ${order}
-      LIMIT ${limit};`
+      SELECT id 
+      FROM cuentas
+      WHERE iban = '${iban}';
+      `
     );
 
     return data.rows;
@@ -113,6 +113,35 @@ export async function fetchMovimientosFromCuenta(cuentaId: string, order: "ASC" 
     await client.end();
   }
 }
+
+export async function fetchMovimientosFromCuenta(iban: string, order: "ASC" | "DESC", limit = 10) {
+  noStore();
+
+  const client = createClient({
+    connectionString: process.env.NEXT_PUBLIC_POSTGRES_URL,
+  });
+  await client.connect();
+
+  try {
+    const idCuentaResult = await fetchIdByCuenta(iban);
+    const idCuenta = idCuentaResult[0].id; // Suponiendo que solo necesitas el primer ID
+
+    const data = await client.query(`
+      SELECT * FROM movimientos
+      JOIN cuentas ON movimientos.cuenta_id = ${idCuenta}
+      ORDER BY movimientos.date ${order}
+      LIMIT ${limit};`
+    );
+
+    return data.rows;
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error("Failed to get data");
+  } finally {
+    await client.end();
+  }
+}
+
 
 export async function fetchCuentasIDS() {
   noStore();

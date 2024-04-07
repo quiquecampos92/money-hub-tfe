@@ -4,8 +4,9 @@
 import { Cuenta, Movimiento } from "@/shared/interfaces/Interfaces"
 import { useEffect, useState } from "react"
 import MovimientosTable from '@/components/movimientos/table';
+import { TablaMovimientos } from "../Estadisticas/TablaMovimientos"
 import { InvoicesTableSkeleton } from '@/components/skeletons';
-import { fetchMovimientos, fetchMovimientosPages } from '@/shared/middlewares/data';
+import { fetchMovimientos, fetchMovimientosPages, fetchMovimientosFromCuenta } from '@/shared/middlewares/data';
 import { Suspense } from 'react';
 import Pagination from '@/components/movimientos/pagination';
 
@@ -15,20 +16,21 @@ import Pagination from '@/components/movimientos/pagination';
 export const SelecterCuenta = async ({ cuentas: _cuentas }: { cuentas: Cuenta[] }, { searchParams }: { searchParams?: { query?: string; page?: string }; }) => {
     const [iban, setIban] = useState<string>('todas')
     const [cuentas, setCuentas] = useState<Cuenta[]>([])
+    const [movimientos, setMovimientos] = useState<Movimiento[]>([])
+
 
     useEffect(() => {
         fetch(`/api/cuentas?iban=${iban}`, { cache: "no-store" })
             .then(res => res.json())
             .then(data => {
-                setCuentas(data)
+                setMovimientos(data)
             })
             .catch(err => console.error(err))
 
     }, [iban])
     // const query = searchParams?.query || '';
-    const currentPage = Number(searchParams?.page) || 1;
+    // const currentPage = Number(searchParams?.page) || 1;
 
-    const movimientos = await fetchMovimientos("DESC", currentPage);
     // const totalPages = await fetchMovimientosPages();
     return (
         <>
