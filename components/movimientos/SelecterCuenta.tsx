@@ -28,8 +28,8 @@ export const SelecterCuenta = async ({ cuentas: _cuentas }: { cuentas: Cuenta[] 
             .catch(err => console.error(err))
 
     }, [iban])
-    // const query = searchParams?.query || '';
-    // const currentPage = Number(searchParams?.page) || 1;
+    const query = searchParams?.query || '';
+    const currentPage = Number(searchParams?.page) || 1;
 
     // const totalPages = await fetchMovimientosPages();
     return (
@@ -52,7 +52,7 @@ export const SelecterCuenta = async ({ cuentas: _cuentas }: { cuentas: Cuenta[] 
             </select>
 
             {/* Aquí se muestran los movimientos de la cuenta seleccionada */}
-            {/* <Suspense key={query + currentPage} fallback={<InvoicesTableSkeleton />}>
+            <Suspense key={query + currentPage} fallback={<InvoicesTableSkeleton />}>
                 {(!movimientos || movimientos.length === 0) ?
                     <div
                         className='flex flex-col items-center p-[100px] rounded-lg w-full border border-blue-400'
@@ -63,12 +63,12 @@ export const SelecterCuenta = async ({ cuentas: _cuentas }: { cuentas: Cuenta[] 
                 }
             </Suspense>
 
-            <div className="mt-5 flex w-full justify-center">
+            {/* <div className="mt-5 flex w-full justify-center">
                 {(movimientos && movimientos.length > 0) && <Pagination totalPages={totalPages as number} />}
             </div> */}
-            <div className='w-full flex'>
+            {/* <div className='w-full flex'>
                 <MovimientosTable movimiento={movimientos} />
-            </div>
+            </div> */}
         </>
     )
 }
