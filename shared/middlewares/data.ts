@@ -118,7 +118,7 @@ export async function fetchIdByCuenta(iban: string) {
 }
 
 
-export async function fetchMovimientosFromCuenta(iban: string, order: "ASC" | "DESC", limit = 10) {
+export async function fetchMovimientosFromCuenta(iban = "todas", order: "ASC" | "DESC", limit = 20) {
   noStore();
 
   const client = createClient({
@@ -127,18 +127,26 @@ export async function fetchMovimientosFromCuenta(iban: string, order: "ASC" | "D
   await client.connect();
 
   try {
-    const idCuentaResult = await fetchIdByCuenta(iban);
-    const idCuenta = idCuentaResult[0].id; // Suponiendo que solo necesitas el primer ID
-    // console.log(idCuenta);
-
-    const data = await client.query(`
+    let query = `
       SELECT * FROM movimientos
-      WHERE cuenta_id = '${idCuenta}'
-      ORDER BY movimientos.date ${order}
-      LIMIT ${limit}
-      ;`
-    );
+      `;
+      
+    // Si iban es "todas", omitir la condición de cuenta_id
+    if (iban !== "todas") {
+      const idCuentaResult = await fetchIdByCuenta(iban);
+      const idCuenta = idCuentaResult[0].id; // Suponiendo que solo necesitas el primer ID
+      query += `
+        WHERE cuenta_id = '${idCuenta}'
+        `;
+    }
 
+    // Agregar el orden y límite
+    query += `
+      ORDER BY date ${order}
+      LIMIT ${limit}
+    `;
+
+    const data = await client.query(query);
 
     return data.rows;
   } catch (error) {
@@ -148,6 +156,7 @@ export async function fetchMovimientosFromCuenta(iban: string, order: "ASC" | "D
     await client.end();
   }
 }
+
 
 
 export async function fetchCuentasIDS() {
