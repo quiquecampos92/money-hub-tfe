@@ -2,7 +2,7 @@ import { CreateMovimientos } from '@/components/movimientos/buttons';
 import Pagination from '@/components/movimientos/pagination';
 import MovimientosTable from '@/components/movimientos/table';
 import { InvoicesTableSkeleton } from '@/components/skeletons';
-import { fetchMovimientos, fetchMovimientosPages } from '@/shared/middlewares/data';
+import { fetchMovimientos, fetchMovimientosPages, fetchCuentasUser } from '@/shared/middlewares/data';
 import { Metadata } from 'next';
 import { Suspense } from 'react';
 import { SelecterCuenta } from '@/components/movimientos/SelecterCuenta';
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 };
 
 export default async function Page({
-  searchParams,
+  searchParams
 }: {
   searchParams?: {
     query?: string;
@@ -24,9 +24,9 @@ export default async function Page({
   const query = searchParams?.query || '';
   const currentPage = Number(searchParams?.page) || 1;
 
-  const grafica = await fetchMovimientos("ASC", undefined, undefined); //esta es coppiada de lo mismo que para filtrar movimientos
-  const movimientos = await fetchMovimientos("DESC", currentPage);
-  const totalPages = await fetchMovimientosPages();
+  const cuentas = await fetchCuentasUser("ASC"); //esta es coppiada de lo mismo que para filtrar movimientos
+  // const movimientos = await fetchMovimientos("DESC", currentPage);
+  // const totalPages = await fetchMovimientosPages();
 
   return (
     <div
@@ -37,7 +37,7 @@ export default async function Page({
 </h1>
 
       {/* Aqui se muestra el select de las cuentas bancarias del usuario */}
-      {/* <SelecterCuenta movimientos={grafica} />  */}
+      <SelecterCuenta cuentas={cuentas} /> 
       {/* Aqui se muestra el select de las fechas seleccionadas */}
       {/* <SelecterDate movimientos={grafica} />  */}
       <div
@@ -46,7 +46,7 @@ export default async function Page({
         <CreateMovimientos />
       </div>
 
-      <Suspense key={query + currentPage} fallback={<InvoicesTableSkeleton />}>
+      {/* <Suspense key={query + currentPage} fallback={<InvoicesTableSkeleton />}>
         {(!movimientos || movimientos.length === 0) ?
           <div
             className='flex flex-col items-center p-[100px] rounded-lg w-full border border-blue-400'
@@ -59,7 +59,7 @@ export default async function Page({
 
       <div className="mt-5 flex w-full justify-center">
         {(movimientos && movimientos.length > 0) && <Pagination totalPages={totalPages as number} />}      
-      </div>
+      </div> */}
     </div>
   );
 }

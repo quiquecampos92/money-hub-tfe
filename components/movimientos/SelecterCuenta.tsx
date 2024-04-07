@@ -1,39 +1,72 @@
 "use client"
-// Esta debe mostrar el select de las cuentas bancarias del usuario
-import { Movimiento } from "@/shared/interfaces/Interfaces"
-import { useEffect, useState } from "react"
 
-export const SelecterCuenta = ({ movimientos: _movimientos }: { movimientos: Movimiento[] }) => {
-    const [concepto, setConcepto] = useState<string>('todos')
-    const [movimientos, setMovimientos] = useState<Movimiento[]>([])
+// Esta debe mostrar el select de las cuentas bancarias del usuario
+import { Cuenta, Movimiento } from "@/shared/interfaces/Interfaces"
+import { useEffect, useState } from "react"
+import MovimientosTable from '@/components/movimientos/table';
+import { InvoicesTableSkeleton } from '@/components/skeletons';
+import { fetchMovimientos, fetchMovimientosPages } from '@/shared/middlewares/data';
+import { Suspense } from 'react';
+import Pagination from '@/components/movimientos/pagination';
+
+
+
+
+export const SelecterCuenta = async ({ cuentas: _cuentas }: { cuentas: Cuenta[] }, { searchParams }: { searchParams?: { query?: string; page?: string }; }) => {
+    const [iban, setIban] = useState<string>('todas')
+    const [cuentas, setCuentas] = useState<Cuenta[]>([])
 
     useEffect(() => {
-        fetch(`/api/movimientos?concepto=${concepto}`, { cache: "no-store" })
+        fetch(`/api/cuentas?iban=${iban}`, { cache: "no-store" })
             .then(res => res.json())
             .then(data => {
-                setMovimientos(data)
+                setCuentas(data)
             })
             .catch(err => console.error(err))
 
-    }, [concepto])
+    }, [iban])
+    // const query = searchParams?.query || '';
+    const currentPage = Number(searchParams?.page) || 1;
 
+    const movimientos = await fetchMovimientos("DESC", currentPage);
+    // const totalPages = await fetchMovimientosPages();
     return (
         <>
+            {/* Aquí se muestra el select de las cuentas bancarias del usuario */}
             <select
                 className='ml-auto p-2 rounded-md border border-gray-300 w-[300px] mb-[20px]'
-                onChange={(e) => setConcepto(e.target.value)}
+                onChange={(e) => setIban(e.target.value)}
             >
-                <option value={"todos"}>Todos</option>
-                {_movimientos
-                .reduce((uniqueMovimientos: any, movimiento: any) => {
-                    if (!uniqueMovimientos.includes(movimiento.concepto)) {
-                        uniqueMovimientos.push(movimiento.concepto);
-                    }
-                    return uniqueMovimientos;
-                }, []).map((concepto: any, index: number) => (
-                        <option key={index} value={concepto}>{concepto}</option>
-                ))}
+                <option value={"todas"}>Todas</option>
+                {_cuentas
+                    .reduce((uniqueCuentas: any, cuenta: any) => {
+                        if (!uniqueCuentas.includes(cuenta.iban)) {
+                            uniqueCuentas.push(cuenta.iban);
+                        }
+                        return uniqueCuentas;
+                    }, []).map((iban: any, index: number) => (
+                        <option key={index} value={iban}>{iban}</option>
+                    ))}
             </select>
+
+            {/* Aquí se muestran los movimientos de la cuenta seleccionada */}
+            {/* <Suspense key={query + currentPage} fallback={<InvoicesTableSkeleton />}>
+                {(!movimientos || movimientos.length === 0) ?
+                    <div
+                        className='flex flex-col items-center p-[100px] rounded-lg w-full border border-blue-400'
+                    >
+                        <p>Aun no hay cuentas cargadas en el sistema</p>
+                    </div>
+                    : <MovimientosTable movimiento={movimientos} />
+                }
+            </Suspense>
+
+            <div className="mt-5 flex w-full justify-center">
+                {(movimientos && movimientos.length > 0) && <Pagination totalPages={totalPages as number} />}
+            </div> */}
+            <div className='w-full flex'>
+                <MovimientosTable movimiento={movimientos} />
+            </div>
         </>
     )
 }
