@@ -32,18 +32,17 @@ export default async function Page({
     <div
       className='w-full flex flex-col'
     >
-<h1 className="text-3xl font-bold text-center md:text-4xl mb-8 text-[#00A2DB] bg-[#F0F4F8] border-4 border-[#00A2DB] border-solid rounded-t-lg rounded-b-none p-4">
-  Movimientos
-</h1>
+      <h1 className="text-3xl font-bold text-center md:text-4xl mb-8 text-[#00A2DB] bg-[#F0F4F8] border-4 border-[#00A2DB] border-solid rounded-t-lg rounded-b-none p-4">
+        Movimientos
+      </h1>
 
-      {/* Aqui se muestra el select de las cuentas bancarias del usuario */}
-      {/* Aqui se muestra el select de las fechas seleccionadas */}
-      {/* <SelecterDate movimientos={grafica} />  */}
       <div
         className='my-[10px] ml-auto'
       >
         <CreateMovimientos />
       </div>
+      {/* Aqui se muestra el select de las fechas seleccionadas */}
+      {/* <SelecterDate movimientos={movimientos} /> */}
 
       <Suspense key={query + currentPage} fallback={<InvoicesTableSkeleton />}>
         {(!movimientos || movimientos.length === 0) ?
@@ -52,14 +51,20 @@ export default async function Page({
           >
             <p>Aun no hay cuentas cargadas en el sistema</p>
           </div>
-          : <SelecterCuenta cuentas={cuentas} /> 
-
+          : (
+            <>
+              {/* Seleccionar por cuenta */}
+              <SelecterCuenta cuentas={cuentas} />
+              {/* Seleccionar por fecha
+              <SelecterDate movimientos={movimientos} /> */}
+            </>
+          )
         }
       </Suspense>
 
-      <div className="mt-5 flex w-full justify-center">
+      {/* <div className="mt-5 flex w-full justify-center">
         {(movimientos && movimientos.length > 0) && <Pagination totalPages={totalPages as number} />}      
-      </div>
+      </div> */}
     </div>
   );
 }

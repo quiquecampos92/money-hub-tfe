@@ -118,7 +118,7 @@ export async function fetchIdByCuenta(iban: string) {
 }
 
 
-export async function fetchMovimientosFromCuenta(iban = "todas", order: "ASC" | "DESC", limit = 10) {
+export async function fetchMovimientosFromCuenta(iban = "todas", order: "ASC" | "DESC", limit = 100) {
   noStore();
 
   const client = createClient({

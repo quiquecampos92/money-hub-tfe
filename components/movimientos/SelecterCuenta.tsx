@@ -9,7 +9,7 @@ import { InvoicesTableSkeleton } from '@/components/skeletons';
 import { fetchMovimientos, fetchMovimientosPages, fetchMovimientosFromCuenta } from '@/shared/middlewares/data';
 import { Suspense } from 'react';
 import Pagination from '@/components/movimientos/pagination';
-
+import { SelecterDate } from '@/components/movimientos/SelecterDate';
 
 
 
@@ -30,28 +30,32 @@ export const SelecterCuenta = async ({ cuentas: _cuentas }: { cuentas: Cuenta[] 
     }, [iban])
     const query = searchParams?.query || '';
     const currentPage = Number(searchParams?.page) || 1;
-
     // const totalPages = await fetchMovimientosPages();
+
     return (
         <>
-            {/* Aquí se muestra el select de las cuentas bancarias del usuario */}
-            <select
-                className='ml-auto p-2 rounded-md border border-gray-300 w-[300px] mb-[20px]'
-                onChange={(e) => setIban(e.target.value)}
-            >
-                <option value={"todas"}>Todas</option>
-                {_cuentas
-                    .reduce((uniqueCuentas: any, cuenta: any) => {
-                        if (!uniqueCuentas.includes(cuenta.iban)) {
-                            uniqueCuentas.push(cuenta.iban);
-                        }
-                        return uniqueCuentas;
-                    }, []).map((iban: any, index: number) => (
-                        <option key={index} value={iban}>{iban}</option>
-                    ))}
-            </select>
+            <div className="flex">
+                {/* Seleccionar por fecha */}
+                <SelecterDate movimientos={movimientos} />
+                {/* Seleccionar por cuenta */}
+                <select
+                    className='ml-auto p-2 rounded-md border border-gray-300 w-[300px] mb-[20px]'
+                    onChange={(e) => setIban(e.target.value)}
+                >
+                    <option value={"todas"}>Todas</option>
+                    {_cuentas
+                        .reduce((uniqueCuentas: any, cuenta: any) => {
+                            if (!uniqueCuentas.includes(cuenta.iban)) {
+                                uniqueCuentas.push(cuenta.iban);
+                            }
+                            return uniqueCuentas;
+                        }, []).map((iban: any, index: number) => (
+                            <option key={index} value={iban}>{iban}</option>
+                        ))}
+                </select>
+            </div>
 
-            {/* Aquí se muestran los movimientos de la cuenta seleccionada */}
+            {/* Aquí se muestran  los movimientos de la cuenta seleccionada */}
             <Suspense key={query + currentPage} fallback={<InvoicesTableSkeleton />}>
                 {(!movimientos || movimientos.length === 0) ?
                     <div
@@ -66,6 +70,7 @@ export const SelecterCuenta = async ({ cuentas: _cuentas }: { cuentas: Cuenta[] 
             {/* <div className="mt-5 flex w-full justify-center">
                 {(movimientos && movimientos.length > 0) && <Pagination totalPages={totalPages as number} />}
             </div> */}
+
             {/* <div className='w-full flex'>
                 <MovimientosTable movimiento={movimientos} />
             </div> */}
