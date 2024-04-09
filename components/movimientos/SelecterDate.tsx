@@ -2,6 +2,7 @@
 // Esta debe mostrar el select de las fechas seleccionadas
 import { Movimiento } from "@/shared/interfaces/Interfaces"
 import { useEffect, useState } from "react"
+import  Filter  from '@/components/filter'
 
 export const SelecterDate = ({ movimientos: _movimientos }: { movimientos: Movimiento[] }) => {
     const [concepto, setConcepto] = useState<string>('todos')
@@ -19,7 +20,7 @@ export const SelecterDate = ({ movimientos: _movimientos }: { movimientos: Movim
 
     return (
         <>
-            <select
+            {/* <select
                 className='ml-auto p-2 rounded-md border border-gray-300 w-[300px] mb-[20px]'
                 onChange={(e) => setConcepto(e.target.value)}
             >
@@ -33,7 +34,11 @@ export const SelecterDate = ({ movimientos: _movimientos }: { movimientos: Movim
                 }, []).map((concepto: any, index: number) => (
                         <option key={index} value={concepto}>{concepto}</option>
                 ))}
-            </select>
+            </select> */}
+            
+            <Filter />
+
+
         </>
     )
 }

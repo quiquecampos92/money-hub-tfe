@@ -36,7 +36,7 @@ export const SelecterCuenta = async ({ cuentas: _cuentas }: { cuentas: Cuenta[] 
         <>
             <div className="flex">
                 {/* Seleccionar por fecha */}
-                <SelecterDate movimientos={movimientos} />
+                <SelecterDate movimientos={movimientos}  />
                 {/* Seleccionar por cuenta */}
                 <select
                     className='ml-auto p-2 rounded-md border border-gray-300 w-[300px] mb-[20px]'
