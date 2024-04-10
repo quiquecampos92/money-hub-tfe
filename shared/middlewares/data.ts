@@ -2,6 +2,7 @@ import { createClient } from '@vercel/postgres';
 import { unstable_noStore as noStore } from 'next/cache';
 import { Revenue, Movimiento, Cuenta, User, MovimientoForm, CuentaForm } from '../interfaces/Interfaces';
 import { auth } from '@/auth';
+import { date } from 'zod';
 
 export async function getIdAuth() {
   noStore();
@@ -89,7 +90,7 @@ export async function fetchRevenue() {
   }
 }
 
-export async function fetchMovimientosFromCuenta(cuentaId: string, order: "ASC" | "DESC", limit = 10) {
+export async function fetchIdByCuenta(iban: string) {
   noStore();
 
   const client = createClient({
@@ -99,11 +100,14 @@ export async function fetchMovimientosFromCuenta(cuentaId: string, order: "ASC" 
 
   try {
     const data = await client.query(`
-      SELECT * FROM movimientos
-      JOIN cuentas ON movimientos.cuenta_id = ${cuentaId}
-      ORDER BY movimientos.date ${order}
-      LIMIT ${limit};`
+      SELECT id 
+      FROM cuentas
+      WHERE iban = '${iban}';
+      `
     );
+
+    // console.log('Data:', data); // Agregar console.log para verificar los datos obtenidos
+    // console.log('Data rows:', data.rows); // Agregar console.log para verificar las filas obtenidas
 
     return data.rows;
   } catch (error) {
@@ -113,6 +117,111 @@ export async function fetchMovimientosFromCuenta(cuentaId: string, order: "ASC" 
     await client.end();
   }
 }
+
+
+export async function fetchMovimientosFromCuenta(iban = "todas", order: "ASC" | "DESC", limit = 100) {
+  noStore();
+
+  const client = createClient({
+    connectionString: process.env.NEXT_PUBLIC_POSTGRES_URL,
+  });
+  await client.connect();
+
+  try {
+    let query = `
+      SELECT movimientos.*, cuentas.accountnumber, cuentas.iban, cuentas.entidad
+      FROM movimientos
+    `;
+
+    if (iban !== "todas") {
+      const idCuentaResult = await fetchIdByCuenta(iban);
+      const idCuenta = idCuentaResult[0].id; // Suponiendo que solo necesitas el primer ID
+
+      query += `
+        JOIN cuentas ON movimientos.cuenta_id = cuentas.id
+        WHERE cuentas.iban = '${iban}'
+      `;
+    } else {
+      query += `
+        JOIN cuentas ON movimientos.cuenta_id = cuentas.id
+      `;
+    }
+
+    query += `
+      ORDER BY movimientos.date ${order}
+      LIMIT ${limit}
+    `;
+
+    const data = await client.query(query);
+
+    return data.rows;
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error("Failed to get data");
+  } finally {
+    await client.end();
+  }
+}
+
+export async function fetchMovimientosByDateFromCuenta(month = "", year = "", iban = "todas", order: "ASC" | "DESC", limit = 100) {
+  noStore();
+ 
+  const client = createClient({
+     connectionString: process.env.NEXT_PUBLIC_POSTGRES_URL,
+  });
+  await client.connect();
+ 
+  try {
+     let query = `
+       SELECT movimientos.*, cuentas.iban, cuentas.entidad
+       FROM movimientos
+     `;
+ 
+     // Inicializa una variable para almacenar las condiciones WHERE
+     let whereConditions = [];
+ 
+     // Si iban no es "todas", agrega la condición para filtrar por IBAN
+     if (iban !== "todas") {
+       const idCuentaResult = await fetchIdByCuenta(iban);
+       const idCuenta = idCuentaResult[0].id; // Suponiendo que solo necesitas el primer ID
+       whereConditions.push(`cuentas.iban = '${iban}'`);
+     }
+ 
+     // Si month y year tienen valor, agrega las condiciones para filtrar por mes y año
+     if (month && year) {
+       whereConditions.push(`EXTRACT(MONTH FROM movimientos.date) = ${month}`);
+       whereConditions.push(`EXTRACT(YEAR FROM movimientos.date) = ${year}`);
+     }
+ 
+     // Si hay condiciones WHERE, agrega la cláusula WHERE a la consulta
+     if (whereConditions.length > 0) {
+       query += `
+         JOIN cuentas ON movimientos.cuenta_id = cuentas.id
+         WHERE ${whereConditions.join(' AND ')}
+       `;
+     } else {
+       query += `
+         JOIN cuentas ON movimientos.cuenta_id = cuentas.id
+       `;
+     }
+ 
+     query += `
+       ORDER BY movimientos.date ${order}
+       LIMIT ${limit}
+     `;
+ 
+     const data = await client.query(query);
+ 
+     return data.rows;
+  } catch (error) {
+     console.error('Database Error:', error);
+     throw new Error("Failed to get data");
+  } finally {
+     await client.end();
+  }
+ }
+ 
+
 
 export async function fetchCuentasIDS() {
   noStore();
@@ -283,104 +392,7 @@ export async function fetchMovimientosFilter(concepto = "todos") {
   }
 }
 
-export async function fetchMovFilterByCuenta(iban = "todos") {
-  noStore();
 
-  const client = createClient({
-    connectionString: process.env.NEXT_PUBLIC_POSTGRES_URL,
-  });
-  await client.connect();
-
-  try {
-    const ids = await fetchCuentasIDS();
-
-    if (!ids) return [];
-
-    let query = `
-      SELECT
-        movimientos.id as id,
-        movimientos.cuenta_id,
-        movimientos.cantidad,
-        movimientos.date,
-        movimientos.concepto,
-        movimientos.tipo
-      FROM movimientos
-      JOIN cuentas ON movimientos.cuenta_id = cuentas.id
-      WHERE cuenta_id IN ${ids}
-    `;
-
-    if (iban !== "todos") {
-      query += `
-        AND movimientos.concepto = '${iban}'
-        LIMIT 10
-      `
-    } else {
-      query += `
-        LIMIT 10
-      `
-    }
-
-    const data = await client.query(query);
-
-    return data.rows;
-
-  } catch (error) {
-    console.error('Database Error:', error);
-    throw new Error("Failed get data")
-  } finally {
-    await client.end();
-  }
-}
-
-// export async function fetchCuentasFilter(iban = "todos") {
-//   noStore();
-
-//   const client = createClient({
-//     connectionString: process.env.NEXT_PUBLIC_POSTGRES_URL,
-//   });
-//   await client.connect();
-
-//   try {
-//     // const ids = await fetchUsersIDS();
-//     const id = await getIdAuth();
-
-//     if (!id) return [];
-
-//     let query = `
-//     SELECT
-//       cuentas.id as id,
-//       cuentas.user_id,
-//       cuentas.name,
-//       cuentas.accountnumber,
-//       cuentas.iban,
-//       cuentas.entidad,
-//       cuentas.saldo
-//     FROM cuentas
-//     JOIN users ON cuentas.user_id = users.id
-//     WHERE user_id ON ${id}
-//         `;
-
-//     if (iban !== "todos") {
-//       query += `
-//           AND cuentas.iban = '${iban}'
-//           LIMIT 10
-//           `
-//     } else {
-//       query += `
-//           LIMIT 10
-//           `
-//     }
-
-//     const data = await client.query(query);
-//     return data.rows;
-
-//   } catch (error) {
-//     console.error('Database Error:', error);
-//     throw new Error("Failed get data")
-//   } finally {
-//     await client.end();
-//   }
-// }
 
 export async function fetchMovimientoById(id: string) {
   noStore();
@@ -496,6 +508,8 @@ export async function fetchCuentaById(id: string) {
 }
 
 const ITEMS_PER_PAGE = 10;
+
+
 export async function fetchMovimientosPages() {
   noStore();
 

@@ -1,7 +1,7 @@
 const { faker } = require('@faker-js/faker');
 
 function generateAccounts(users) {
-    const entities = ['BBVA', 'Santander', 'Sabadel', 'Caixabank'];
+    const entities = ['BBVA', 'Santander', 'Sabadell', 'Caixabank'];
     const cuentas = [];
 
     for (let i = 0; i < users.length; i++) {
