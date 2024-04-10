@@ -6,7 +6,7 @@ import { fetchMovimientos, fetchMovimientosPages, fetchCuentasUser } from '@/sha
 import { Metadata } from 'next';
 import { Suspense } from 'react';
 import { SelecterCuenta } from '@/components/movimientos/SelecterCuenta';
-import { SelecterDate } from '@/components/movimientos/SelecterDate';
+// import { SelecterDate } from '@/components/movimientos/SelecterDate';
 
 
 export const metadata: Metadata = {
