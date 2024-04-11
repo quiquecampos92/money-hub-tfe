@@ -41,7 +41,7 @@ export const SelecterCuenta = async ({ cuentas: _cuentas }: { cuentas: Cuenta[] 
             })
             .catch(err => console.error(err))
 
-    }, [iban])
+    }, [iban, selectedMonth, selectedYear])
     const query = searchParams?.query || '';
     const currentPage = Number(searchParams?.page) || 1;
     // const totalPages = await fetchMovimientosPages();
