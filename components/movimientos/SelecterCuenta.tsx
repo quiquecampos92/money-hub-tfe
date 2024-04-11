@@ -26,22 +26,31 @@ export const SelecterCuenta = async ({ cuentas: _cuentas }: { cuentas: Cuenta[] 
     const handleDateChange = (date: Date | null) => {
         setSelectedDate(date);
     };
+    // Función para restablecer el filtro de fecha
+    const resetDateFilter = () => {
+        setSelectedDate(null);
+    };
 
     // Obtener el mes y el año de la fecha seleccionada
     const selectedMonth = selectedDate?.getMonth()! + 1; // Sumamos 1 porque los meses van de 0 a 11. La exclamación nos dice que no es un valor null ni undefined
     const selectedYear = selectedDate?.getFullYear();
 
-
-
     useEffect(() => {
-        fetch(`/api/cuentas?iban=${iban}&month=${selectedMonth}&year=${selectedYear}`, { cache: "no-store" })
+        // Construye la URL de la solicitud basándose en si se ha seleccionado una fecha o no
+        let url = `/api/cuentas?iban=${iban}`;
+        if (selectedDate) {
+            const selectedMonth = selectedDate.getMonth() + 1; // Los meses en JavaScript van de 0 a 11
+            const selectedYear = selectedDate.getFullYear();
+            url += `&month=${selectedMonth}&year=${selectedYear}`;
+        }
+
+        fetch(url, { cache: "no-store" })
             .then(res => res.json())
             .then(data => {
-                setMovimientos(data)
+                setMovimientos(data);
             })
-            .catch(err => console.error(err))
-
-    }, [iban, selectedMonth, selectedYear])
+            .catch(err => console.error(err));
+    }, [iban, selectedDate]);
     const query = searchParams?.query || '';
     const currentPage = Number(searchParams?.page) || 1;
     // const totalPages = await fetchMovimientosPages();
@@ -50,6 +59,11 @@ export const SelecterCuenta = async ({ cuentas: _cuentas }: { cuentas: Cuenta[] 
     return (
         <>
             <div className="flex justify-end">
+                <div className="text-right mr-4 mt-8">
+                    <button onClick={resetDateFilter} className="bg-gray-100 hover:bg-gray-300 text-black font-bold py-2 px-4 rounded">
+                        Todo el historial
+                    </button>
+                </div>
                 <div className="text-right mr-4">
                     <h3 className="mb-2">Filtrar por mes:</h3>
                     {/* Seleccionar por fecha */}
@@ -58,7 +72,8 @@ export const SelecterCuenta = async ({ cuentas: _cuentas }: { cuentas: Cuenta[] 
                         onChange={handleDateChange}
                         dateFormat="MMMM yyyy" // Formato de visualización (mes completo y año)
                         showMonthYearPicker // Mostrar selector de mes y año en vez del día
-                    />
+                        placeholderText={selectedDate ? selectedDate.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' }) : "Seleccionar mes y año"}
+                        />
                     <p style={{ display: 'none' }}>Month: {selectedMonth}</p>
                     <p style={{ display: 'none' }}>Year: {selectedYear}</p>
                 </div>
