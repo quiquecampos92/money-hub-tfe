@@ -165,62 +165,67 @@ export async function fetchMovimientosFromCuenta(iban = "todas", order: "ASC" | 
 
 export async function fetchMovimientosByDateFromCuenta(month = "", year = "", iban = "todas", order: "ASC" | "DESC", limit = 100) {
   noStore();
- 
+
   const client = createClient({
-     connectionString: process.env.NEXT_PUBLIC_POSTGRES_URL,
+    connectionString: process.env.NEXT_PUBLIC_POSTGRES_URL,
   });
   await client.connect();
- 
+
   try {
-     let query = `
+    const id = await getIdAuth(); // Asegúrate de que esta función devuelve el ID del usuario logueado
+    // console.log('ID:', id); // Agregar console.log para verificar el ID obtenido
+    let query = `
        SELECT movimientos.*, cuentas.iban, cuentas.entidad
        FROM movimientos
      `;
- 
-     // Inicializa una variable para almacenar las condiciones WHERE
-     let whereConditions = [];
- 
-     // Si iban no es "todas", agrega la condición para filtrar por IBAN
-     if (iban !== "todas") {
-       const idCuentaResult = await fetchIdByCuenta(iban);
-       const idCuenta = idCuentaResult[0].id; // Suponiendo que solo necesitas el primer ID
-       whereConditions.push(`cuentas.iban = '${iban}'`);
-     }
- 
-     // Si month y year tienen valor, agrega las condiciones para filtrar por mes y año
-     if (month && year) {
-       whereConditions.push(`EXTRACT(MONTH FROM movimientos.date) = ${month}`);
-       whereConditions.push(`EXTRACT(YEAR FROM movimientos.date) = ${year}`);
-     }
- 
-     // Si hay condiciones WHERE, agrega la cláusula WHERE a la consulta
-     if (whereConditions.length > 0) {
-       query += `
+
+    let whereConditions = [];
+
+    // Si iban no es "todas", agrega la condición para filtrar por IBAN
+    if (iban !== "todas") {
+      const idCuentaResult = await fetchIdByCuenta(iban);
+      const idCuenta = idCuentaResult[0].id; // Suponiendo que solo necesitas el primer ID
+      whereConditions.push(`cuentas.iban = '${iban}'`);
+    }
+
+    // Si month y year tienen valor, agrega las condiciones para filtrar por mes y año
+    if (month && year) {
+      whereConditions.push(`EXTRACT(MONTH FROM movimientos.date) = ${month}`);
+      whereConditions.push(`EXTRACT(YEAR FROM movimientos.date) = ${year}`);
+      whereConditions.push(`cuentas.user_id = '${id}'`);
+    }
+
+
+    // Si hay condiciones WHERE, agrega la cláusula WHERE a la consulta
+    if (whereConditions.length > 0) {
+      query += `
          JOIN cuentas ON movimientos.cuenta_id = cuentas.id
          WHERE ${whereConditions.join(' AND ')}
        `;
-     } else {
-       query += `
+    } else {
+      query += `
          JOIN cuentas ON movimientos.cuenta_id = cuentas.id
+         Where cuentas.user_id = '${id}'
        `;
-     }
- 
-     query += `
+    }
+
+    query += `
        ORDER BY movimientos.date ${order}
        LIMIT ${limit}
      `;
- 
-     const data = await client.query(query);
- 
-     return data.rows;
+
+    const data = await client.query(query);
+
+    return data.rows;
   } catch (error) {
-     console.error('Database Error:', error);
-     throw new Error("Failed to get data");
+    console.error('Database Error:', error);
+    throw new Error("Failed to get data");
   } finally {
-     await client.end();
+    await client.end();
   }
- }
- 
+}
+
+
 
 
 export async function fetchCuentasIDS() {
