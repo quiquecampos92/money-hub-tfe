@@ -289,8 +289,25 @@ export async function fetchUsersIDS() {
   }
 }
 
+const ITEMS_PER_PAGE = 10;
 
-export async function fetchMovimientos(order: "ASC" | "DESC", page = 1, limit = 10) {
+export async function fetchMovimientos({
+  order, 
+  page = 1, 
+  limit = 10, 
+  tipo = "todos",
+  cuentas = "todas",
+  fechas,
+  concepto = "todos",
+} : {
+  order: "ASC" | "DESC",
+  page?: number,
+  limit?: number,
+  tipo?: "todos" | "ingreso" | "gasto"
+  cuentas?: "todas" | string,
+  fechas?: { start: string | undefined, end: string | undefined },
+  concepto?: string
+}) {
   noStore();
 
   const client = createClient({
@@ -302,6 +319,9 @@ export async function fetchMovimientos(order: "ASC" | "DESC", page = 1, limit = 
     const ids = await fetchCuentasIDS();
 
     if (!ids) return [];
+    
+    const queryTipo = tipo === "todos" ? '(\'ingreso\', \'gasto\')' : `('${tipo}')`;
+    const queryCuenta = cuentas === "todas" ? ids : `('${cuentas}')`;
 
     let query = `
       SELECT
@@ -319,22 +339,65 @@ export async function fetchMovimientos(order: "ASC" | "DESC", page = 1, limit = 
         cuentas.saldo
       FROM movimientos
       JOIN cuentas ON movimientos.cuenta_id = cuentas.id
-      WHERE cuenta_id IN ${ids}
-      ORDER BY movimientos.date ${order}
+      WHERE cuenta_id IN ${queryCuenta}
+      AND movimientos.tipo IN ${queryTipo}
     `;
 
-    if (limit && page) {
+    if(fechas?.start && fechas?.end && concepto === "todos") {
+      query += `
+        AND movimientos.date BETWEEN '${fechas?.start}' AND '${fechas?.end}'
+        ORDER BY movimientos.date ${order}
+      `
+    } else if (fechas?.start && fechas?.end && concepto !== "todos") {
+      query += `
+        AND movimientos.date BETWEEN '${fechas?.start}' AND '${fechas?.end}'
+        AND movimientos.concepto = '${concepto}'
+        ORDER BY movimientos.date ${order}
+      `
+    } else if ((!fechas?.start || !fechas?.end) && concepto !== "todos") {
+      query += `
+        AND movimientos.concepto = '${concepto}'
+        ORDER BY movimientos.date ${order}
+      `
+    }
+    else if (!fechas?.start || !fechas?.end && concepto === "todos") {
+      query += `
+        ORDER BY movimientos.date ${order}
+      `
+    }
+
+    if (limit && page) {  
       const offset = (page - 1) * limit;
       query += `
         LIMIT ${limit}
         OFFSET ${offset}
       `
     }
-
+    
     const data = await client.query(query);
 
-    return data.rows;
+    const queryArray = query.split('FROM')
+    queryArray[0] = 'SELECT COUNT(*) FROM'
+    const queryCount = queryArray.join('')
+      ?.replace('JOIN cuentas ON movimientos.cuenta_id = cuentas.id', '')
+      ?.replace('ORDER BY movimientos.date ASC', '')
+      ?.replace('ORDER BY movimientos.date DESC', '')
+      ?.replace('LIMIT 10', '')
+      ?.replace('OFFSET 10', '')
+      ?.replace('OFFSET 20', '')
+      ?.replace('OFFSET 30', '')
+      ?.replace('OFFSET 40', '')
+      ?.replace('OFFSET 50', '')
+      ?.replace('OFFSET 60', '')
+      ?.replace('OFFSET 70', '')
+      ?.replace('OFFSET 80', '')
 
+    const count = await client.query(queryCount)
+
+    return {
+      data: data.rows,
+      total: count.rows[0].count
+    };
   } catch (error) {
     console.error('Database Error:', error);
     throw new Error("Failed get data")
@@ -507,7 +570,6 @@ export async function fetchCuentaById(id: string) {
   }
 }
 
-const ITEMS_PER_PAGE = 10;
 
 
 export async function fetchMovimientosPages() {

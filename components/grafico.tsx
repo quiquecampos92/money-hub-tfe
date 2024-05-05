@@ -9,7 +9,8 @@ import {
     XAxis,
     YAxis,
     CartesianGrid,
-    Tooltip
+    Tooltip,
+    ResponsiveContainer
 } from "recharts";
 
 export const Grafico = ({ movimientos }: { movimientos: Movimiento[] }) => {
@@ -17,7 +18,7 @@ export const Grafico = ({ movimientos }: { movimientos: Movimiento[] }) => {
     const data = movimientos?.reduce((acc: any, m: Movimiento) => {
         const month = format(new Date(m.date), 'MMM');
         const existingMonth: any = acc.find((item: any) => item?.name === month);
-        
+
         if (existingMonth) {
             existingMonth.uv += getValue(m.cantidad, m.tipo);
         } else {
@@ -26,10 +27,10 @@ export const Grafico = ({ movimientos }: { movimientos: Movimiento[] }) => {
                 uv: getValue(m.cantidad, m.tipo)
             });
         }
-    
+
         return acc;
     }, []);
-    
+
 
     const gradientOffset = () => {
         const dataMax = Math.max(...data.map((i: any) => i.uv));
@@ -48,35 +49,40 @@ export const Grafico = ({ movimientos }: { movimientos: Movimiento[] }) => {
     const off = gradientOffset();
 
     return (
-        <div>
-            <AreaChart
-                width={550}
-                height={600}
-                data={data}
-                margin={{
-                    top: 10,
-                    right: 0,
-                    left: 0,
-                    bottom: 0
-                }}
+        <div
+            className="w-full h-[500px] bg-white rounded-md shadow-md p-4"
+        >
+            <ResponsiveContainer
+                width={"100%"}
+                height={"100%"}
             >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <defs>
-                    <linearGradient id="splitColor" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset={off} stopColor="green" stopOpacity={1} />
-                        <stop offset={off} stopColor="red" stopOpacity={1} />
-                    </linearGradient>
-                </defs>
-                <Area
-                    type="monotone"
-                    dataKey="uv"
-                    stroke="#000"
-                    fill="url(#splitColor)"
-                />
-            </AreaChart>
+                <AreaChart
+                    data={data}
+                    margin={{
+                        top: 10,
+                        right: 0,
+                        left: 0,
+                        bottom: 0
+                    }}
+                >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip />
+                    <defs>
+                        <linearGradient id="splitColor" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset={off} stopColor="green" stopOpacity={1} />
+                            <stop offset={off} stopColor="red" stopOpacity={1} />
+                        </linearGradient>
+                    </defs>
+                    <Area
+                        type="monotone"
+                        dataKey="uv"
+                        stroke="#000"
+                        fill="url(#splitColor)"
+                    />
+                </AreaChart>
+            </ResponsiveContainer>
         </div>
     )
 }

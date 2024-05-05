@@ -11,9 +11,9 @@ interface Props {
 export default async function LatestMovimientos({ movimientos }: Props) {
 
   return (
-    <div className="flex w-full flex-col md:col-span-4">
-      <h2 className={`${lusitana.className} mb-4 text-xl md:text-2xl`}>
-        Últimos movimientos
+    <div className="flex w-full flex-col md:col-span-4 bg-white rounded-md shadow-md p-4">
+      <h2 className={`${lusitana.className} mb-[5px] text-xl md:text-2xl`}>
+        Movimientos
       </h2>
       <div className="flex grow flex-col justify-between rounded-xl bg-gray-50 p-4">
         <div className="bg-white px-6">

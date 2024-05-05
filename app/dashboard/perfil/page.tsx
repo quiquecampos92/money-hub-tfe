@@ -1,7 +1,6 @@
 import { Metadata } from 'next';
 import UserTable from '@/components/Perfil/table';
-import { fetchCuentasUser, fetchMovimientos } from '@/shared/middlewares/data';
-import { UpdateUser } from '@/components/movimientos/buttons';
+import { fetchCuentasUser } from '@/shared/middlewares/data';
 
 export const metadata: Metadata = {
   title: 'Cuentas',
@@ -9,7 +8,6 @@ export const metadata: Metadata = {
 
 export default async function Page() {
   const cuentas = await fetchCuentasUser("ASC");
-  const movimientos = await fetchMovimientos("ASC", undefined, undefined);
 
   return (
     <main

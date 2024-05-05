@@ -1,8 +1,7 @@
-import Link from 'next/link';
 import { Movimiento } from '@/shared/interfaces/Interfaces';
 import { formatDateToLocal } from '@/shared/utils/functions';
 import { DeleteMovimiento, UpdateMovimiento } from './buttons';
-export default async function MovimientosTable({
+export default function MovimientosTable({
   movimiento,
 }: {
   movimiento: Movimiento[];
@@ -49,9 +48,9 @@ export default async function MovimientosTable({
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="text-sm font-medium text-gray-900">{m.concepto}</div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
+                {/* <td className="px-6 py-4 whitespace-nowrap">
                   <div className="text-sm font-medium text-gray-900">{m.accountnumber}</div>
-                </td>
+                </td> */}
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="text-sm font-medium text-gray-900">{m.iban}</div>
                 </td>

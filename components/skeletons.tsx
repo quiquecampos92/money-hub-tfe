@@ -18,6 +18,48 @@ export function CardSkeleton() {
   );
 }
 
+export function EstadisticasSkeleton({ filter = false } : { filter?: boolean }) {
+  return (
+    <div
+      className={`${shimmer} relative overflow-hidden flex flex-col gap-[20px] rounded-xl bg-gray-100 p-2 shadow-sm`}
+    >
+      {filter && <div className="rounded-md bg-gray-200 w-full h-[100px]" />}
+
+      <div className="rounded-md bg-gray-200 w-full h-[400px]" />
+
+      <div className="rounded-md bg-gray-200 w-full h-[400px]" />
+    </div>
+  );
+}
+
+export function MovimientosSkeleton() {
+  return (
+    <div
+      className={`${shimmer} relative overflow-hidden flex flex-col gap-[20px] rounded-xl bg-gray-100 p-2 shadow-sm`}
+    >
+      <div className="rounded-md bg-gray-200 w-full h-[80px]" />
+
+      <div className="rounded-md bg-gray-200 w-full h-[800px]" />
+
+      <div className="rounded-md bg-gray-200 w-full h-[50px]" />
+    </div>
+  );
+}
+
+export function CuentasSkeleton() {
+  return (
+    <div
+      className={`${shimmer} relative overflow-hidden flex flex-wrap gap-[20px] rounded-xl`}
+    >
+      <div className="rounded-md bg-gray-200 h-[294px] w-[443px]" />
+      <div className="rounded-md bg-gray-200 h-[294px] w-[443px]" />
+      <div className="rounded-md bg-gray-200 h-[294px] w-[443px]" />
+      <div className="rounded-md bg-gray-200 h-[294px] w-[443px]" />
+      <div className="rounded-md bg-gray-200 h-[294px] w-[443px]" />
+    </div>
+  );
+}
+
 export function CardsSkeleton() {
   return (
     <>

@@ -4,7 +4,9 @@ import { fetchCuentasUser, fetchMovimientos, getIdAuth, getNameAuth, fetchCountC
 
 export default async function Page() {
   const cuentas = await fetchCuentasUser("ASC");
-  const movimientos = await fetchMovimientos("ASC");
+  const { data }: any = await fetchMovimientos({
+    order: "ASC",
+  });
   const name = await getNameAuth();
 
   return (
@@ -16,7 +18,7 @@ export default async function Page() {
           <h1 className="text-3xl font-bold text-center text-[#EB8833]">¡Bienvenido, {name}!</h1>
         </div>
         <div className="w-full">
-          <SaldoTotal cuentas={cuentas} movimientos={movimientos} />
+          <SaldoTotal cuentas={cuentas} movimientos={data} />
         </div>
       </div>
       <br />

@@ -9,7 +9,11 @@ export const metadata: Metadata = {
 
 export default async function Page() {
   const cuentas = await fetchCuentasUser("ASC");
-  const movimientos = await fetchMovimientos("ASC", undefined, undefined);
+  const { data }: any = await fetchMovimientos({
+    order: "ASC",
+    page: undefined,
+    limit: undefined,
+  });
 
   return (
     <main
@@ -34,7 +38,7 @@ export default async function Page() {
         >
           <p>Aun no hay cuentas cargadas en el sistema</p>
         </div>
-        : <CuentasTable cuentas={cuentas} movimientos={movimientos} />
+        : <CuentasTable cuentas={cuentas} movimientos={data} />
         }
       </div>
     </main>

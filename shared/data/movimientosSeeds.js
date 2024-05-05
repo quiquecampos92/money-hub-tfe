@@ -23,7 +23,7 @@ function generateMovimiento(accounts) {
             id: faker.string.uuid(),
             cuenta_id: accounts[i].id,
             cantidad: faker.finance.amount({ min: 30, max: 300, dec: 2, symbol: '€' }),
-            date: faker.date.between({ from: '2024-01-01T00:00:00.000Z', to: '2024-12-31T00:00:00.000Z' }),
+            date: faker.date.between({ from: '2023-07-01T00:00:00.000Z', to: '2024-05-04T00:00:00.000Z' }),
             concepto: concepto,
             tipo: generateTipo(concepto),
           };
