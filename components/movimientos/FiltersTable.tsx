@@ -63,6 +63,10 @@ export const FilterTable = ({ cuentas, currentPage, queryParams }: Props) => {
 
     const totalPages = (count: any): number => Math.ceil(count / 10)
 
+    const formatAccountName = (iban: string) => {
+        return "**** " + iban.slice(20, 24) + iban.slice(24, 29)
+    }
+
     return (
         <div
             className="w-full flex flex-col"
@@ -93,11 +97,11 @@ export const FilterTable = ({ cuentas, currentPage, queryParams }: Props) => {
 
                 <select
                     onChange={(e) => setCuenta(e.target.value)}
-                    className='p-2 rounded-md border border-gray-300 w-[215px]'
+                    className='p-2 rounded-md border border-gray-300 w-[250px]'
                 >
                     <option value={"todas"}>Todas</option>
                     {cuentas.map((cuenta: Cuenta, index: number) => (
-                        <option key={index} value={cuenta?.id}>{truncate(cuenta.iban, { length: 10, omission: "" })}</option>
+                        <option key={index} value={cuenta?.id}>{formatAccountName(cuenta?.iban) + " - " + cuenta?.entidad}</option>
                     ))}
                 </select>
             </div>

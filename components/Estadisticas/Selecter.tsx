@@ -78,6 +78,10 @@ export const Selecter = ({ cuentas }: Props) => {
         return acc;
     }, {});
 
+    const formatAccountName = (iban: string) => {
+        return "**** " + iban.slice(20, 24) + iban.slice(24, 29)
+    }
+
     return (
         <div
             className="w-full flex flex-col gap-[20px]"
@@ -137,11 +141,11 @@ export const Selecter = ({ cuentas }: Props) => {
 
                         <select
                             onChange={(e) => setCuenta(e.target.value)}
-                            className='p-2 rounded-md border border-gray-300 w-[215px]'
+                            className='p-2 rounded-md border border-gray-300 w-[250px]'
                         >
                             <option value={"todas"}>Todas</option>
                             {cuentas?.map((cuenta: Cuenta, index: number) => (
-                                <option key={index} value={cuenta?.id}>{truncate(cuenta.iban, { length: 10, omission: "" })}</option>
+                                <option key={index} value={cuenta?.id}>{formatAccountName(cuenta?.iban) + " - " + cuenta?.entidad}</option>
                             ))}
                         </select>
                     </div>
